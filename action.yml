@@ -1,0 +1,8 @@
+# action.yml
+name: 'Check URLs'
+description: 'Check URLs from a JSON file'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ./json/single-bad.json
