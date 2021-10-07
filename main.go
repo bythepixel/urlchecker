@@ -22,7 +22,8 @@ type SlackClient struct {
 }
 
 func (c SlackClient) SendMessage(status int, message string) {
-	msg := fmt.Sprintf("%s responded with %d", message, status)
+	repo := os.Getenv("GITHUB_REPOSITORY")
+	msg := fmt.Sprintf("Repository: %s URL: %s responded with %d", repo, message, status)
 
 	pl := payload{
 		Text: msg,
