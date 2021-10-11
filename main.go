@@ -75,7 +75,10 @@ func main() {
 	bytes, _ := ioutil.ReadFile(filename)
 
 	var urls []string
-	json.Unmarshal(bytes, &urls)
+	err := json.Unmarshal(bytes, &urls)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	for _, url := range urls {
 		log.Printf("Checking %s...\n", url)
