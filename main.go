@@ -52,7 +52,7 @@ func fetch(url string) (int, error) {
 }
 
 func main() {
-	log.Println("Starting...")
+	fmt.Println("::debug::Starting...")
 
 	webhook := os.Getenv(EnvSlackWebhook)
 	if webhook == "" {
