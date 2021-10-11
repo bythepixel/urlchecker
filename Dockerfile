@@ -1,4 +1,4 @@
-FROM golang:1.17
+FROM golang:1.17-alpine
 
 COPY go.mod /go.mod
 COPY main.go /main.go
