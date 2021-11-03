@@ -1,6 +1,9 @@
 # action.yml
 name: 'Check URLs'
 description: 'Check URLs from a JSON file'
+branding:
+  icon: check-square
+  color: gray-dark
 runs:
   using: 'docker'
   image: 'Dockerfile'
