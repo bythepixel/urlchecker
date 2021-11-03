@@ -13,4 +13,4 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ./json/single-bad.json
+    - ${{ inputs.filename }}

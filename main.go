@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -14,7 +15,6 @@ import (
 const (
 	EnvSlackWebhook = "SLACK_WEBHOOK"
 	EnvGithubRepo   = "GITHUB_REPOSITORY"
-	EnvFilename     = "INPUT_FILENAME"
 )
 
 type HealthCheck struct {
@@ -84,9 +84,9 @@ func main() {
 	}
 
 	// A filename must be specified for the program to read.
-	filename := os.Getenv(EnvFilename)
-	// flag.StringVar(&filename, "filename", "", "JSON File with URLs")
-	// flag.Parse()
+	var filename string
+	flag.StringVar(&filename, "filename", "", "JSON File with URLs")
+	flag.Parse()
 	if filename == "" {
 		log.Fatal("Missing filename flag")
 	}
