@@ -21,9 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Check URLs
-        uses: bythepixel/urlchecker
-        args:
-          - ./urls.json
+        uses: bythepixel/urlchecker@v0.2.0
+        with:
+          filename: ./urls.json
 ```
 
 ## Description
