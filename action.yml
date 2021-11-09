@@ -22,3 +22,4 @@ runs:
   args:
     - ${{ inputs.hostname }}
     - ${{ inputs.filename }}
+    - ${{ inputs.protocol }}
