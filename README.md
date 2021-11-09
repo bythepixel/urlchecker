@@ -23,6 +23,7 @@ jobs:
       - name: Check URLs
         uses: bythepixel/urlchecker@v0.2.0
         with:
+          hostname: 'postman-echo.com'
           filename: ./urls.json
 ```
 
@@ -40,15 +41,15 @@ This GitHub Action reads a JSON file, crawls the URLs, and checks the resposnes.
 ```json
 [
     {
-        "url": "https://postman-echo.com/status/200",
+        "url": "/status/200",
         "status": 200
     },
     {
-        "url": "https://postman-echo.com/status/200",
+        "url": "/status/200",
         "status": 200
     },
     {
-        "url": "https://postman-echo.com/status/200",
+        "url": "/status/200",
         "status": 200,
         "regex": "200"
     }
