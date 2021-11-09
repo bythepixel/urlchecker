@@ -15,4 +15,5 @@ jobs:
       - name: Check URLs
         uses: ./ # Uses an action in the root directory
         with:
+          hostname: 'postman-echo.com'
           filename: './json/single-url.json'
