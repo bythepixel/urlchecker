@@ -19,6 +19,6 @@ branding:
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  with:
-    hostname: ${{ inputs.hostname }}
-    filename: ${{ inputs.filename }}
+  args:
+    - ${{ inputs.hostname }}
+    - ${{ inputs.filename }}
