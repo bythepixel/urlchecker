@@ -1,6 +1,6 @@
 [
     {
-        "url": "https://postman-echo.com/status/200",
+        "path": "/status/200",
         "status": 200
     }
 ]

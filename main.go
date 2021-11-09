@@ -18,14 +18,14 @@ const (
 )
 
 type HealthCheck struct {
-	// URL to check
-	URL string `json:"url"`
-
-	// Status code expected from URL
-	Status int `json:"status"`
+	// Path to check
+	Path string `json:"path"`
 
 	// Regex used to check the body of the response
 	Regex string `json:"regex"`
+
+	// Status code expected from URL
+	Status int `json:"status"`
 }
 
 // SlackWebhookPayload represents the minimum required fields to send a webhook.
@@ -85,10 +85,22 @@ func main() {
 
 	// A filename must be specified for the program to read.
 	var filename string
-	flag.StringVar(&filename, "filename", "", "JSON File with URLs")
+	flag.StringVar(&filename, "filename", "", "JSON File with paths")
+
+	// A hostname must be specified since this may be used in different
+	// environments.
+	var hostname string
+	flag.StringVar(&hostname, "hostname", "", "Hostname of website")
+
+	var protocol string
+	flag.StringVar(&protocol, "protocol", "https", "Protocol to use")
+
 	flag.Parse()
 	if filename == "" {
 		log.Fatal("Missing filename flag")
+	}
+	if hostname == "" {
+		log.Fatal("Missing hostname flag")
 	}
 
 	// Attempt to read the file specified.
@@ -107,9 +119,10 @@ func main() {
 
 	// Loop through URLs and check each one.
 	for _, check := range urls {
-		log.Printf("Checking %s...\n", check.URL)
+		url := protocol + "://" + hostname + check.Path
+		log.Printf("Checking %s...\n", url)
 
-		status, body, err := fetch(check.URL)
+		status, body, err := fetch(url)
 		if err != nil {
 			// Log the error and keep going.
 			log.Printf("Error: %s\n", err.Error())
@@ -120,7 +133,7 @@ func main() {
 			// next URL. We want to crawl every URL, so we don't exit if a URL
 			// returns an incorrect response.
 			msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
-			slack.SendMessage(status, check.URL, msg)
+			slack.SendMessage(status, url, msg)
 			continue
 		}
 
@@ -134,7 +147,7 @@ func main() {
 			matches := re.MatchString(body)
 			if !matches {
 				log.Println("HTTP Response Body Error")
-				slack.SendMessage(status, check.URL, "HTTP Response Body Error")
+				slack.SendMessage(status, url, "HTTP Response Body Error")
 				continue
 			}
 		}

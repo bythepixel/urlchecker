@@ -2,10 +2,17 @@
 name: 'Check URLs'
 description: 'Check URLs from a JSON file'
 inputs:
+  hostname:
+    description: 'Hostname of website'
+    required: true
   filename:
     description: 'Filename of the JSON file'
     required: false
     default: './urls.json'
+  protocol:
+    description: 'http or https'
+    required: false
+    default: 'https'
 branding:
   icon: check-square
   color: gray-dark
@@ -13,4 +20,5 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
+    - ${{ inputs.hostname }}
     - ${{ inputs.filename }}

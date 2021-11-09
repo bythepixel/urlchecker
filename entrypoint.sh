@@ -1,3 +1,3 @@
 #!/bin/sh -l
 
-/main -filename $*
+/main -hostname $1 -filename $2
