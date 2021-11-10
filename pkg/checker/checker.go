@@ -52,7 +52,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 
 	for _, check := range urls {
 		url := protocol + "://" + hostname + check.Path
-		fmt.Printf("Checking %s...n", url)
+		log.Printf("Checking %s...", url)
 
 		status, body, err := client.Fetch(url)
 		if err != nil {
