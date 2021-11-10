@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -10,11 +9,9 @@ import (
 	"net/http"
 	"os"
 	"regexp"
-)
 
-const (
-	EnvSlackWebhook = "SLACK_WEBHOOK"
-	EnvGithubRepo   = "GITHUB_REPOSITORY"
+	"github.com/bythepixel/urlchecker/pkg/config"
+	"github.com/bythepixel/urlchecker/pkg/slack"
 )
 
 type HealthCheck struct {
@@ -26,36 +23,6 @@ type HealthCheck struct {
 
 	// Status code expected from URL
 	Status int `json:"status"`
-}
-
-// SlackWebhookPayload represents the minimum required fields to send a webhook.
-//
-// https://api.slack.com/messaging/webhooks
-type SlackWebhookPayload struct {
-	Text string `json:"text"`
-}
-
-// SlackClient contains the Webhook URL.
-type SlackClient struct {
-	Webhook string
-}
-
-// SendMessage creates a SlackWebhookPayload and sends it to the Webhook URL.
-func (c SlackClient) SendMessage(status int, url string, message string) {
-	repo := os.Getenv(EnvGithubRepo)
-	msg := fmt.Sprintf("Repository: %s URL: %s Message: %s", repo, url, message)
-
-	pl := SlackWebhookPayload{
-		Text: msg,
-	}
-
-	jsonPayload, _ := json.Marshal(pl)
-
-	_, err := http.Post(c.Webhook, "application/json", bytes.NewBuffer(jsonPayload))
-
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 func fetch(url string) (int, string, error) {
@@ -75,11 +42,11 @@ func fetch(url string) (int, string, error) {
 
 func main() {
 	// A Slack Webhook must be specified as an environment variable.
-	webhook := os.Getenv(EnvSlackWebhook)
+	webhook := os.Getenv(config.EnvSlackWebhook)
 	if webhook == "" {
-		log.Fatalf("Missing '%s' Environment Variable", EnvSlackWebhook)
+		log.Fatalf("Missing '%s' Environment Variable", config.EnvSlackWebhook)
 	}
-	slack := SlackClient{
+	slack := slack.SlackClient{
 		Webhook: webhook,
 	}
 
