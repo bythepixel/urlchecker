@@ -1,7 +1,11 @@
+// Eventually I would like to create structs for each type (json, xml) and give
+// them methods to crawl the urls they contain. Then I could reduce some of the
+// duplicate code.
 package checker
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -26,6 +30,12 @@ type HealthCheck struct {
 
 	// XMLSitemap indicates the Path to check is an XML Sitemap
 	XMLSitemap bool `json:"xml_sitemap"`
+}
+
+type XMLSitemap struct {
+	URL []struct {
+		Location string `xml:"loc"`
+	} `xml:"url"`
 }
 
 func Check(filename, protocol, hostname string, messager Messager) {
@@ -69,6 +79,26 @@ func Check(filename, protocol, hostname string, messager Messager) {
 			}
 		}
 
-		fmt.Println("Good")
+		if check.XMLSitemap {
+			var sitemapUrls XMLSitemap
+			err := xml.Unmarshal([]byte(body), &sitemapUrls)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			for _, xmlUrl := range sitemapUrls.URL {
+				fmt.Printf("Checking %s... ", xmlUrl.Location)
+				status, _, err := client.Fetch(xmlUrl.Location)
+				if err != nil {
+					log.Printf("Error: %s\n", err.Error())
+				}
+
+				if status != check.Status {
+					msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
+					messager.SendMessage(status, url, msg)
+					continue
+				}
+			}
+		}
 	}
 }
