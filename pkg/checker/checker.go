@@ -97,7 +97,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 				if status != check.Status {
 					log.Println(status)
 					msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
-					messager.SendMessage(status, url, msg)
+					messager.SendMessage(status, xmlUrl.Location, msg)
 					continue
 				}
 
