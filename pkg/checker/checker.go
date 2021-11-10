@@ -101,7 +101,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 					continue
 				}
 
-				log.Printf("%s Good\n", url)
+				log.Printf("%s Good\n", xmlUrl.Location)
 			}
 		}
 
