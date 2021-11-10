@@ -93,7 +93,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 					log.Printf("Error: %s\n", err.Error())
 				}
 
-				if status != check.Status {
+				if status != 200 {
 					msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
 					messager.SendMessage(status, url, msg)
 					continue
