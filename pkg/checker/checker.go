@@ -43,7 +43,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 	// Loop through URLs and check each one.
 	for _, check := range urls {
 		url := protocol + "://" + hostname + check.Path
-		log.Printf("Checking %s...\n", url)
+		fmt.Printf("Checking %s... ", url)
 
 		status, body, err := client.Fetch(url)
 		if err != nil {
@@ -74,5 +74,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 				continue
 			}
 		}
+
+		fmt.Println("Good")
 	}
 }
