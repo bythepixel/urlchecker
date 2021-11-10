@@ -12,6 +12,7 @@ import (
 	"regexp"
 
 	"github.com/bythepixel/urlchecker/pkg/client"
+	"github.com/bythepixel/urlchecker/pkg/config"
 )
 
 type Messager interface {
@@ -51,8 +52,11 @@ func Check(filename, protocol, hostname string, messager Messager) {
 	}
 
 	for _, check := range urls {
+		fmt.Printf(".")
 		url := protocol + "://" + hostname + check.Path
-		log.Printf("Checking %s...", url)
+		if config.Debug {
+			log.Printf("Checking %s...", url)
+		}
 
 		status, body, err := client.Fetch(url)
 		if err != nil {
@@ -66,7 +70,9 @@ func Check(filename, protocol, hostname string, messager Messager) {
 		}
 
 		if check.Regex != "" {
-			log.Println("Checking regex")
+			if config.Debug {
+				log.Println("Checking regex")
+			}
 			re, err := regexp.Compile(check.Regex)
 			if err != nil {
 				log.Fatal(err)
@@ -80,7 +86,9 @@ func Check(filename, protocol, hostname string, messager Messager) {
 		}
 
 		if check.XMLSitemap {
-			log.Println("Checking sitemap")
+			if config.Debug {
+				log.Println("Checking sitemap")
+			}
 			var sitemapUrls XMLSitemap
 			err := xml.Unmarshal([]byte(body), &sitemapUrls)
 			if err != nil {
@@ -88,7 +96,11 @@ func Check(filename, protocol, hostname string, messager Messager) {
 			}
 
 			for _, xmlUrl := range sitemapUrls.URL {
-				log.Printf("Checking %s...\n", xmlUrl.Location)
+				fmt.Printf(".")
+				if config.Debug {
+					log.Printf("Checking %s...\n", xmlUrl.Location)
+				}
+
 				status, _, err := client.Fetch(xmlUrl.Location)
 				if err != nil {
 					log.Printf("Error: %s\n", err.Error())
@@ -101,10 +113,14 @@ func Check(filename, protocol, hostname string, messager Messager) {
 					continue
 				}
 
-				log.Printf("%s Good\n", xmlUrl.Location)
+				if config.Debug {
+					log.Printf("%s Good\n", xmlUrl.Location)
+				}
 			}
 		}
 
-		log.Printf("%s Good\n", url)
+		if config.Debug {
+			log.Printf("%s Good\n", url)
+		}
 	}
 }
