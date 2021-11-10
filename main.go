@@ -1,32 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
-	"regexp"
 
-	"github.com/bythepixel/urlchecker/pkg/client"
+	"github.com/bythepixel/urlchecker/pkg/checker"
 	"github.com/bythepixel/urlchecker/pkg/config"
 	"github.com/bythepixel/urlchecker/pkg/slack"
 )
-
-type HealthCheck struct {
-	// Path to check
-	Path string `json:"path"`
-
-	// Regex used to check the body of the response
-	Regex string `json:"regex"`
-
-	// Status code expected from URL
-	Status int `json:"status"`
-
-	// XMLSitemap indicates the Path to check is an XML Sitemap
-	XMLSitemap bool `json:"xml_sitemap"`
-}
 
 func main() {
 	// A Slack Webhook must be specified as an environment variable.
@@ -60,53 +42,7 @@ func main() {
 
 	// Attempt to read the file specified.
 	log.Printf("Reading %s...\n", filename)
-	bytes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
 
 	// Attempt to parse the file content as JSON.
-	var urls []HealthCheck
-	err = json.Unmarshal(bytes, &urls)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	// Loop through URLs and check each one.
-	for _, check := range urls {
-		url := protocol + "://" + hostname + check.Path
-		log.Printf("Checking %s...\n", url)
-
-		status, body, err := client.Fetch(url)
-		if err != nil {
-			// Log the error and keep going.
-			log.Printf("Error: %s\n", err.Error())
-		}
-
-		if status != check.Status {
-			// Log the invalid response, send it to slack, then move onto the
-			// next URL. We want to crawl every URL, so we don't exit if a URL
-			// returns an incorrect response.
-			msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
-			slack.SendMessage(status, url, msg)
-			continue
-		}
-
-		if check.Regex != "" {
-			log.Println("Checking regex")
-			re, err := regexp.Compile(check.Regex)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			matches := re.MatchString(body)
-			if !matches {
-				log.Println("HTTP Response Body Error")
-				slack.SendMessage(status, url, "HTTP Response Body Error")
-				continue
-			}
-		}
-
-		log.Println("Good")
-	}
+	checker.Check(filename, protocol, hostname, slack)
 }
