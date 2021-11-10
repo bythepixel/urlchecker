@@ -1,5 +1,6 @@
 FROM golang:1.17-alpine
 
+COPY pkg /pkg
 COPY go.mod /go.mod
 COPY main.go /main.go
 COPY entrypoint.sh /entrypoint.sh
