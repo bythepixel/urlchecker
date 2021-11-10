@@ -52,6 +52,11 @@ This GitHub Action reads a JSON file, crawls the URLs, and checks the resposnes.
         "url": "/status/200",
         "status": 200,
         "regex": "200"
+    },
+    {
+        "path": "/store-sitemap.xml",
+        "status": 200,
+        "xml_sitemap": true
     }
 ]
 ```
