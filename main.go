@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"regexp"
 
+	"github.com/bythepixel/urlchecker/pkg/client"
 	"github.com/bythepixel/urlchecker/pkg/config"
 	"github.com/bythepixel/urlchecker/pkg/slack"
 )
@@ -23,21 +23,9 @@ type HealthCheck struct {
 
 	// Status code expected from URL
 	Status int `json:"status"`
-}
 
-func fetch(url string) (int, string, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return 0, "", err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return 0, "", err
-	}
-
-	return resp.StatusCode, string(body), nil
+	// XMLSitemap indicates the Path to check is an XML Sitemap
+	XMLSitemap bool `json:"xml_sitemap"`
 }
 
 func main() {
@@ -89,7 +77,7 @@ func main() {
 		url := protocol + "://" + hostname + check.Path
 		log.Printf("Checking %s...\n", url)
 
-		status, body, err := fetch(url)
+		status, body, err := client.Fetch(url)
 		if err != nil {
 			// Log the error and keep going.
 			log.Printf("Error: %s\n", err.Error())
