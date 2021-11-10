@@ -80,6 +80,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 		}
 
 		if check.XMLSitemap {
+			log.Println("Checking sitemap")
 			var sitemapUrls XMLSitemap
 			err := xml.Unmarshal([]byte(body), &sitemapUrls)
 			if err != nil {
@@ -87,17 +88,20 @@ func Check(filename, protocol, hostname string, messager Messager) {
 			}
 
 			for _, xmlUrl := range sitemapUrls.URL {
-				fmt.Printf("Checking %s... ", xmlUrl.Location)
+				log.Printf("Checking %s...\n", xmlUrl.Location)
 				status, _, err := client.Fetch(xmlUrl.Location)
 				if err != nil {
 					log.Printf("Error: %s\n", err.Error())
 				}
 
-				if status != 200 {
+				if status != check.Status {
+					log.Println(status)
 					msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
 					messager.SendMessage(status, url, msg)
 					continue
 				}
+
+				log.Printf("%s Good\n", url)
 			}
 		}
 
