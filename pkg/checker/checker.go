@@ -52,7 +52,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 
 	for _, check := range urls {
 		url := protocol + "://" + hostname + check.Path
-		fmt.Printf("Checking %s... ", url)
+		fmt.Printf("Checking %s...n", url)
 
 		status, body, err := client.Fetch(url)
 		if err != nil {
@@ -100,5 +100,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 				}
 			}
 		}
+
+		log.Printf("%s Good\n", url)
 	}
 }
