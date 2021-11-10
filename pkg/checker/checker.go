@@ -40,21 +40,16 @@ func Check(filename, protocol, hostname string, messager Messager) {
 		log.Fatal(err.Error())
 	}
 
-	// Loop through URLs and check each one.
 	for _, check := range urls {
 		url := protocol + "://" + hostname + check.Path
 		fmt.Printf("Checking %s... ", url)
 
 		status, body, err := client.Fetch(url)
 		if err != nil {
-			// Log the error and keep going.
 			log.Printf("Error: %s\n", err.Error())
 		}
 
 		if status != check.Status {
-			// Log the invalid response, send it to slack, then move onto the
-			// next URL. We want to crawl every URL, so we don't exit if a URL
-			// returns an incorrect response.
 			msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
 			messager.SendMessage(status, url, msg)
 			continue
@@ -69,7 +64,6 @@ func Check(filename, protocol, hostname string, messager Messager) {
 
 			matches := re.MatchString(body)
 			if !matches {
-				// log.Println("HTTP Response Body Error")
 				messager.SendMessage(status, url, "HTTP Response Body Error")
 				continue
 			}
