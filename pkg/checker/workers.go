@@ -9,10 +9,6 @@ import (
 	"github.com/bythepixel/urlchecker/pkg/client"
 )
 
-func Worker() {
-
-}
-
 func XMLWorker(ctx context.Context, urlChan chan string, id int, messager Messager, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for {
@@ -21,7 +17,7 @@ func XMLWorker(ctx context.Context, urlChan chan string, id int, messager Messag
 			if !ok {
 				return
 			}
-			log.Printf("Worker %d Checking %s...\n", id, url)
+			log.Printf("Worker [%d] %s...\n", id, url)
 			status, _, err := client.Fetch(url)
 			if err != nil {
 				log.Printf("Error: %s\n", err.Error())
@@ -34,7 +30,7 @@ func XMLWorker(ctx context.Context, urlChan chan string, id int, messager Messag
 				continue
 			}
 
-			log.Printf("%s Good\n", url)
+			log.Printf("Worker [%d] %s good!\n", id, url)
 		case <-ctx.Done():
 			return
 		}
