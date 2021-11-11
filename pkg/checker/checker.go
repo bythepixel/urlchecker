@@ -41,7 +41,7 @@ type XMLSitemap struct {
 	} `xml:"url"`
 }
 
-func Check(filename, protocol, hostname string, messager Messager) {
+func Check(filename, protocol, hostname string, messager Messager, workers int) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -91,7 +91,7 @@ func Check(filename, protocol, hostname string, messager Messager) {
 		}
 
 		if check.XMLSitemap {
-			numberOfXMLWorkers := 5
+			numberOfXMLWorkers := workers
 			log.Println("Checking sitemap")
 			var sitemapUrls XMLSitemap
 			err := xml.Unmarshal([]byte(body), &sitemapUrls)

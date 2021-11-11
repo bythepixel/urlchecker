@@ -13,6 +13,10 @@ inputs:
     description: 'http or https'
     required: false
     default: 'https'
+  workers:
+    description: 'number of concurrent workers'
+    required: false
+    default: 5
 branding:
   icon: check-square
   color: gray-dark
@@ -23,3 +27,4 @@ runs:
     - ${{ inputs.hostname }}
     - ${{ inputs.filename }}
     - ${{ inputs.protocol }}
+    - ${{ inputs.workers }}

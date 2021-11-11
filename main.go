@@ -32,6 +32,9 @@ func main() {
 	var protocol string
 	flag.StringVar(&protocol, "protocol", "https", "Protocol to use")
 
+	var workers int
+	flag.IntVar(&workers, "workers", 5, "Number of concurrent workers")
+
 	flag.Parse()
 	if filename == "" {
 		log.Fatal("Missing filename flag")
@@ -44,5 +47,5 @@ func main() {
 	log.Printf("Reading %s...\n", filename)
 
 	// Attempt to parse the file content as JSON.
-	checker.Check(filename, protocol, hostname, slack)
+	checker.Check(filename, protocol, hostname, slack, workers)
 }
