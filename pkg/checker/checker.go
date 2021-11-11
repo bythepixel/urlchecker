@@ -4,12 +4,14 @@
 package checker
 
 import (
+	"context"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"regexp"
+	"sync"
 
 	"github.com/bythepixel/urlchecker/pkg/client"
 	"github.com/bythepixel/urlchecker/pkg/config"
@@ -51,6 +53,9 @@ func Check(filename, protocol, hostname string, messager Messager) {
 		log.Fatal(err.Error())
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	for _, check := range urls {
 		fmt.Printf(".")
 		url := protocol + "://" + hostname + check.Path
@@ -86,37 +91,30 @@ func Check(filename, protocol, hostname string, messager Messager) {
 		}
 
 		if check.XMLSitemap {
-			if config.Debug {
-				log.Println("Checking sitemap")
-			}
+			numberOfXMLWorkers := 5
+			log.Println("Checking sitemap")
 			var sitemapUrls XMLSitemap
 			err := xml.Unmarshal([]byte(body), &sitemapUrls)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			for _, xmlUrl := range sitemapUrls.URL {
-				fmt.Printf(".")
-				if config.Debug {
-					log.Printf("Checking %s...\n", xmlUrl.Location)
+			xmlUrlsChan := make(chan string)
+			go func() {
+				for _, xmlUrl := range sitemapUrls.URL {
+					xmlUrlsChan <- xmlUrl.Location
 				}
 
-				status, _, err := client.Fetch(xmlUrl.Location)
-				if err != nil {
-					log.Printf("Error: %s\n", err.Error())
-				}
+				close(xmlUrlsChan)
+			}()
 
-				if status != check.Status {
-					log.Println(status)
-					msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
-					messager.SendMessage(status, xmlUrl.Location, msg)
-					continue
-				}
-
-				if config.Debug {
-					log.Printf("%s Good\n", xmlUrl.Location)
-				}
+			var xmlWg sync.WaitGroup
+			for x := 0; x < numberOfXMLWorkers; x++ {
+				xmlWg.Add(1)
+				go XMLWorker(ctx, xmlUrlsChan, x, messager, &xmlWg)
 			}
+
+			xmlWg.Wait()
 		}
 
 		if config.Debug {
