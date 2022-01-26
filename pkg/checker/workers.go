@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/bythepixel/urlchecker/pkg/client"
 )
 
-func XMLWorker(ctx context.Context, urlChan chan string, id int, messager Messager, wg *sync.WaitGroup) {
+func XMLWorker(ctx context.Context, urlChan chan string, id int, messager Messager, wg *sync.WaitGroup, sleep time.Duration) {
 	defer wg.Done()
 	for {
 		select {
@@ -29,6 +30,8 @@ func XMLWorker(ctx context.Context, urlChan chan string, id int, messager Messag
 				messager.SendMessage(status, url, msg)
 				continue
 			}
+
+			time.Sleep(sleep)
 
 			// log.Printf("Worker [%d] %s good!\n", id, url)
 		case <-ctx.Done():

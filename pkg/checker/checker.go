@@ -12,6 +12,7 @@ import (
 	"log"
 	"regexp"
 	"sync"
+	"time"
 
 	"github.com/bythepixel/urlchecker/pkg/client"
 	"github.com/bythepixel/urlchecker/pkg/config"
@@ -41,7 +42,7 @@ type XMLSitemap struct {
 	} `xml:"url"`
 }
 
-func Check(filename, protocol, hostname string, messager Messager, workers int) {
+func Check(filename, protocol, hostname string, messager Messager, workers int, sleep time.Duration) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -111,11 +112,13 @@ func Check(filename, protocol, hostname string, messager Messager, workers int) 
 			var xmlWg sync.WaitGroup
 			for x := 0; x < numberOfXMLWorkers; x++ {
 				xmlWg.Add(1)
-				go XMLWorker(ctx, xmlUrlsChan, x, messager, &xmlWg)
+				go XMLWorker(ctx, xmlUrlsChan, x, messager, &xmlWg, sleep)
 			}
 
 			xmlWg.Wait()
 		}
+
+		time.Sleep(sleep)
 
 		if config.Debug {
 			log.Printf("%s Good\n", url)

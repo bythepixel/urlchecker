@@ -17,6 +17,10 @@ inputs:
     description: 'number of concurrent workers'
     required: false
     default: 5
+  sleep:
+    description: 'number of seconds to sleep between requests'
+    required: false
+    default: 0
 branding:
   icon: check-square
   color: gray-dark
@@ -28,3 +32,4 @@ runs:
     - ${{ inputs.filename }}
     - ${{ inputs.protocol }}
     - ${{ inputs.workers }}
+    - ${{ inputs.sleep }}

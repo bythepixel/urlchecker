@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"time"
 
 	"github.com/bythepixel/urlchecker/pkg/checker"
 	"github.com/bythepixel/urlchecker/pkg/config"
@@ -35,6 +36,9 @@ func main() {
 	var workers int
 	flag.IntVar(&workers, "workers", 5, "Number of concurrent workers")
 
+	var sleepFlag int
+	flag.IntVar(&sleepFlag, "sleep", 0, "Number of seconds to sleep between requests")
+
 	flag.Parse()
 	if filename == "" {
 		log.Fatal("Missing filename flag")
@@ -46,6 +50,8 @@ func main() {
 	// Attempt to read the file specified.
 	log.Printf("Reading %s...\n", filename)
 
+	sleep := time.Duration(sleepFlag)
+
 	// Attempt to parse the file content as JSON.
-	checker.Check(filename, protocol, hostname, slack, workers)
+	checker.Check(filename, protocol, hostname, slack, workers, sleep)
 }
