@@ -28,7 +28,6 @@ func XMLWorker(ctx context.Context, urlChan chan string, id int, messager Messag
 				log.Println(status)
 				msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
 				messager.SendMessage(status, url, msg)
-				continue
 			}
 
 			time.Sleep(sleep)
