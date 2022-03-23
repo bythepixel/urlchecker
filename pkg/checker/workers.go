@@ -30,7 +30,8 @@ func XMLWorker(ctx context.Context, urlChan chan string, id int, messager Messag
 				messager.SendMessage(status, url, msg)
 			}
 
-			time.Sleep(sleep)
+
+			time.Sleep(sleep * time.Second)
 		case <-ctx.Done():
 			return
 		}
