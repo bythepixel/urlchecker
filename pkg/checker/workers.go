@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/bythepixel/urlchecker/pkg/client"
 )
 
+var maxErrors uint64 = 5
 
 func XMLWorker(ctx context.Context, cancel context.CancelFunc, urlChan chan string, id int, messager Messager, wg *sync.WaitGroup, sleep time.Duration, errorCount *uint64) {
 	defer wg.Done()
@@ -29,8 +31,13 @@ func XMLWorker(ctx context.Context, cancel context.CancelFunc, urlChan chan stri
 				log.Println(status)
 				msg := fmt.Sprintf("Invalid HTTP Response Status %d", status)
 				messager.SendMessage(status, url, msg)
+				atomic.AddUint64(errorCount, 1)
 			}
 
+			if *errorCount > maxErrors {
+				log.Printf("Aborting... error count [%d] is greater than max error count [%d]", *errorCount, maxErrors)
+				cancel()
+			}
 
 			time.Sleep(sleep * time.Second)
 		case <-ctx.Done():
