@@ -10,7 +10,8 @@ import (
 	"github.com/bythepixel/urlchecker/pkg/client"
 )
 
-func XMLWorker(ctx context.Context, urlChan chan string, id int, messager Messager, wg *sync.WaitGroup, sleep time.Duration) {
+
+func XMLWorker(ctx context.Context, cancel context.CancelFunc, urlChan chan string, id int, messager Messager, wg *sync.WaitGroup, sleep time.Duration, errorCount *uint64) {
 	defer wg.Done()
 	for {
 		select {

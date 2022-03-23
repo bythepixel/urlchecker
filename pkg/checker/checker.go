@@ -57,6 +57,8 @@ func Check(filename, protocol, hostname string, messager Messager, workers int, 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	var errorCount uint64 = 0
+
 	for _, check := range urls {
 		fmt.Printf(".")
 		url := protocol + "://" + hostname + check.Path
@@ -112,7 +114,7 @@ func Check(filename, protocol, hostname string, messager Messager, workers int, 
 			var xmlWg sync.WaitGroup
 			for x := 0; x < numberOfXMLWorkers; x++ {
 				xmlWg.Add(1)
-				go XMLWorker(ctx, xmlUrlsChan, x, messager, &xmlWg, sleep)
+				go XMLWorker(ctx, cancel, xmlUrlsChan, x, messager, &xmlWg, sleep, &errorCount)
 			}
 
 			xmlWg.Wait()
