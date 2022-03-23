@@ -111,8 +111,10 @@ func Check(filename, protocol, hostname string, messager Messager, workers int, 
 				close(xmlUrlsChan)
 			}()
 
+			log.Printf("Starting %d workers...\n", numberOfXMLWorkers)
 			var xmlWg sync.WaitGroup
 			for x := 0; x < numberOfXMLWorkers; x++ {
+				log.Printf("Starting worker # %d\n", x)
 				xmlWg.Add(1)
 				go XMLWorker(ctx, cancel, xmlUrlsChan, x, messager, &xmlWg, sleep, &errorCount)
 			}
