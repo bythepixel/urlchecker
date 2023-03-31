@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bythepixel/urlchecker/pkg/client"
+	"github.com/bythepixel/urlchecker/pkg/config"
 )
 
 var maxErrors uint64 = 5
@@ -20,6 +21,10 @@ func XMLWorker(ctx context.Context, cancel context.CancelFunc, urlChan chan stri
 		case url, ok := <-urlChan:
 			if !ok {
 				return
+			}
+
+			if config.Debug {
+				log.Printf("Checking %s...", url)
 			}
 
 			status, _, err := client.Fetch(url)
